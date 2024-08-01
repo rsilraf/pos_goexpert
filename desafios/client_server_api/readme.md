@@ -2,7 +2,7 @@
 
 Cenário proposto por desafio de pós graduaçáo em Golang (Go expert da *Fullcycle.com.br*)
 
-![](./client_server_api/images/desafio.png)
+![](./images/desafio.png)
 
 Criar dois arquivos, `client.go` e `server.go`
 
@@ -18,16 +18,16 @@ O banco de dados sqlite criado é o **usd.db**.
 O arquivo criado pelo cliente é o **cotacao.txt**
 
 ## Exemplo de chamada direta ao serviço /cotacao no servidor
-![](./client_server_api/images/server.png)
+![](./images/server.png)
 
 ## Exemplo de execução com sucesso (go run main.go)
-![](./client_server_api/images/sucesso.png)
+![](./images/sucesso.png)
 
 ## Exemplo de execução com falha (go run main.go)
-![](./client_server_api/images/falhas.png)
+![](./images/falhas.png)
 
 ## Exemplo de execução com log de erro de inserção por causa da cotação já existir no banco - violação de constraint (go run main.go)
-![](./client_server_api/images/constraint.png)
+![](./images/constraint.png)
 
 ## Execução
 Considerando utilização via WSL, ambiente linha de comando Linux (bash), acessar o diretório de desafios client_server_api e executar:
