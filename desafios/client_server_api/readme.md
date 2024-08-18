@@ -33,10 +33,10 @@ O arquivo criado pelo cliente é o **cotacao.txt**
 Considerando utilização via WSL, ambiente linha de comando Linux (bash), acessar o diretório de desafios client_server_api e executar:
 
 ```shell 
-# apaga arquivo e banco pré existentes~
+# apaga arquivo e banco pré existentes
 rm usd.db cotacao.txt
 ```
-e então realizar a execução go main.go:
+e então realizar a execução do arquivo `main.go`:
 
 ```shell
 go run main.go
