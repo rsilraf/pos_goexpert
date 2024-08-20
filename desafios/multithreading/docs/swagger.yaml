@@ -1,0 +1,154 @@
+basePath: /
+definitions:
+  dto.CreateUserInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  dto.GetTokenInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  dto.GetTokenOutput:
+    properties:
+      token:
+        type: string
+    type: object
+  handlers.CepInfo:
+    properties:
+      api:
+        type: string
+      bairro:
+        type: string
+      cep:
+        type: string
+      complemento:
+        type: string
+      ddd:
+        type: string
+      gia:
+        type: string
+      ibge:
+        type: string
+      localidade:
+        type: string
+      logradouro:
+        type: string
+      siafi:
+        type: string
+      uf:
+        type: string
+      unidade:
+        type: string
+    type: object
+  handlers.Error:
+    properties:
+      message:
+        type: string
+    type: object
+host: localhost:8000
+info:
+  contact: {}
+  description: CEP API with multithreading and authentication
+  title: Go Expert - CEP API
+  version: "1.0"
+paths:
+  /cep/{cep}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - default: "01311200"
+        description: cep
+        in: path
+        name: cep
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.CepInfo'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - cep
+  /token:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: token request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.GetTokenInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetTokenOutput'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Get a JWT
+      tags:
+      - auth
+  /users:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: user request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateUserInput'
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Create user
+      tags:
+      - user
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

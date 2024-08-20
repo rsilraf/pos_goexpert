@@ -1,0 +1,5 @@
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjQxNTA0NTgsInN1YiI6ImExMDJjZmMwLTZiNWQtNDViZi04ZjRkLTAxODlhNjA1OGMwMyJ9.LbiVh_dBXIhSdm45TloPHa24nlHqaS625lP4Fbsrfsc
+
+GET http://localhost:8000/cep/09910300
+Authorization: bearer {{token}}
+
