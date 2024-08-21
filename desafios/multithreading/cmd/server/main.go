@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -25,6 +27,22 @@ import (
 // @in header
 // @name Authorization
 func main() {
+
+	if len(os.Args) > 1 {
+		println("Execução única para o CEP:", os.Args[1])
+		cep := os.Args[1]
+		cepInfo, err := handlers.GetCepInfo(cep)
+
+		if err != nil {
+			fmt.Println("Falhou:", err)
+			os.Exit(1)
+		}
+		fmt.Println("----------------------------------------")
+		fmt.Println(cepInfo.String())
+		fmt.Println("----------------------------------------")
+		return
+	}
+
 	conf, err := config.Load()
 	if err != nil {
 		panic(err)
@@ -63,5 +81,7 @@ func main() {
 		swagger.URL("http://localhost:8000/docs/doc.json"),
 	))
 
+	println("Iniciando servidor web na porta 8000")
+	println("Acesse localhost:8000/docs/index.html")
 	http.ListenAndServe(":8000", r)
 }

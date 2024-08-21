@@ -32,6 +32,31 @@ A princípio é uma solução estilo "bala de canhão para matar mosquito" mas p
 
 Procurei utilizar dos conhecimentos adquiridos nas aulas anteriores para a criação de API com autenticação via JWT, uso de banco de dados com GORM, contexto e concorrência com select para concelar processamento desnecessário, configuração com Viper, middlewares e rotas com o Chi, variáveis de ambiente via arquivo .env e documentação Swagger.
 
+Adicionei duas formas de execução, uma via API que pode ser utilizada via interface Swagger, e outra via linha de comando.
+
+
+# Execução via linha de comando
+
+Para executar e obter o resultado via linha de comando, é necessário informar um cep como parâmetro para o executar o main.go.
+
+Acesse cmd/server e execute `go run main.go <cep>`. Veja exemplo abaixo:
+
+### Resposta obtida pelo BrasilAPI
+![](./images/cli_1.png)
+
+### Resposta obtida pelo ViaCEP
+![](./images/cli_2.png)
+
+### Resposta para cep inválido
+![](./images/cli_invalid.png)
+
+### Resposta em caso de timeout
+![](./images/cli_timeout.png)
+
+
+
+# Solução  API web
+
 
 Criei uma api que roda na porta `:8000` para solicitar as informações de CEP, GET `/cep/{cep}`, sendo esta rota  protegida, necessita uso de token para acessar.
 
@@ -46,14 +71,16 @@ A resposta final inclui qual a API de origem da informação retornada.
 A API tem documentação auto-gerada à partir de comentários no código utilizando-se do swaggo.
 
 
-Para executar a API, acesse cmd/server, copie ou renomei o arquivo `.env_example` para `.env` e execute `go run .`.
+Para executar a API, acesse cmd/server, copie ou renomei o arquivo `.env_example` para `.env` e execute `go run main.go`.
 Considerando WSL (ambiente Linux):
 
 ```
 cd cmd/server
 cp .env_example .env
-go run .
+go run main.go
 ```
+
+![](./images/execucao_web.png)
 
 Então acesse `http://localhost:8000/docs/index.html`
 

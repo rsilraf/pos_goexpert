@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -31,6 +30,36 @@ type CepInfo struct {
 	Ddd         string `json:"ddd"`
 	Siafi       string `json:"siafi"`
 	API         string `json:"api"`
+}
+
+func (c *CepInfo) String() string {
+	return fmt.Sprintf(
+		"Cep        : %s\n"+
+			"Logradouro : %s\n"+
+			"Complemento: %s\n"+
+			"Unidade    : %s\n"+
+			"Bairro     : %s\n"+
+			"Localidade : %s\n"+
+			"Uf         : %s\n"+
+			"Ibge       : %s\n"+
+			"Gia        : %s\n"+
+			"Ddd        : %s\n"+
+			"Siafi      : %s\n"+
+			"API        : %s\n",
+
+		c.Cep,
+		c.Logradouro,
+		c.Complemento,
+		c.Unidade,
+		c.Bairro,
+		c.Localidade,
+		c.Uf,
+		c.Ibge,
+		c.Gia,
+		c.Ddd,
+		c.Siafi,
+		c.API,
+	)
 }
 
 type viaCepAPI struct {
@@ -121,7 +150,7 @@ func (h *CepHandler) GetCep(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cepInfo, err := getCepInfo(cep)
+	cepInfo, err := GetCepInfo(cep)
 	if err != nil {
 		sendError(w, http.StatusInternalServerError, err)
 		return
@@ -142,13 +171,13 @@ func (a *APIs) request(ctx context.Context, url string, cepStruct CepInterface) 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		call.Error = err
-		return nil
+		return call
 	}
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		call.Error = err
-		return nil
+		return call
 	}
 	defer resp.Body.Close()
 
@@ -158,8 +187,14 @@ func (a *APIs) request(ctx context.Context, url string, cepStruct CepInterface) 
 		call.Error = err
 	}
 
+	if resp.StatusCode != 200 {
+		call.Error = errors.New(resp.Status)
+		return call
+	}
+
 	if json.Unmarshal(call.Body, cepStruct) != nil {
-		return nil
+		call.Error = errors.New("unmarshal failed")
+		return call
 	}
 
 	call.Cep = cepStruct.ToCepInfo()
@@ -188,7 +223,7 @@ func (a *APIs) ViaCEP(ctx context.Context, cep string) chan *APICall {
 	return ch
 }
 
-func getCepInfo(cep string) (*CepInfo, error) {
+func GetCepInfo(cep string) (*CepInfo, error) {
 
 	apis := &APIs{}
 	ctx, cancel := context.WithTimeout(context.Background(), HTTP_TIMEOUT)
@@ -201,18 +236,22 @@ func getCepInfo(cep string) (*CepInfo, error) {
 
 	select {
 	case answer = <-resA:
+		// println("BrasilAPI")
 		cancel()
 	case answer = <-resB:
+		// println("ViaCEP")
 		cancel()
 
 	case <-time.After(HTTP_TIMEOUT):
 		return nil, errors.New("timeout")
 	}
 
+	if answer == nil {
+		return nil, errors.New("invalid result")
+	}
 	if answer.Error != nil {
-		log.Println(answer.Error)
 		return nil, answer.Error
 	}
-	fmt.Println(answer)
+
 	return answer.Cep, nil
 }
