@@ -12,7 +12,8 @@ Faz parte do desafio implementar a listagem das ordens também nos três canais 
 
 A lógica Core é separada dos canais de interação e a solução completa envolve a utilização de várias tecnologias, docker-compose, rabbitMQ, MySQL, GraphQL, gRPC, Makefile, bibliotecas Go: Viper, protoc, go-wire, SqlC, gqlgen, go migrate e Evans.
 
-A solução final foi a listagem de ordens implementada, exposta na web via `/list`, consultada via grapqh com uma query do tipo: 
+A solução final foi a listagem de ordens implementada, exposta na web via GET `/order`, 
+consultada via grapqh com uma query do tipo: 
 ```
 query listOrders {
   listOrders{
@@ -36,7 +37,23 @@ Toda vez que a listagem é chamada, (assim como já estava implementada para a c
 
 
 # Execução
-Via Make file com:
+Subir RabbitMQ e MySQL via docker-compose:
+
+### Preparar ambiente
+```bash
+docker-compose up -d
+```
+
+Preparar o BD via migration:
+```bash
+make migrate
+```
+Isto deve criar a tabela de ordens (orders).
+Use 'make migratedown' para apagar a tabela.
+
+
+### Iniciar servidor go
+Iniciar servidor go via Makefile com:
 ```bash
 make run 
 ```
@@ -52,8 +69,51 @@ Starting gRPC server on port 50051
 Starting GraphQL server on port 8080
 ```
 
-**Nota:** é preciso configurar a fila ou filas no RabbitMQ e o bind da exchange amq.direct para a(s) mesma(s). A mensagem de criação vai com uma key 'created', enquanto a de listagem vai com uma key 'listed'
 
+
+## Criar ordens
+utilize o arquivo api/api.http para fazer a criação de ordens.
+
+
+### Cliente GraphQL: `http://localhost:8080/`
+
+```graphql
+query listOrders {
+  listOrders{
+    id
+    Price
+    Tax
+    FinalPrice
+  }
+}
+
+mutation createOrder {
+  createOrder(input:{
+    id: "graphql",
+    Price: 10.2,
+    Tax: 0.3,    
+  }){
+		id
+    Price
+    Tax
+    FinalPrice
+  }
+}
+```
+
+
+### RabbitMQ: `http://localhost:15672/`
+```
+usuáro: guest
+senha: guest
+```
+**Nota:** é preciso configurar a fila ou filas no RabbitMQ e o bind da exchange amq.direct para a(s) mesma(s). A mensagem de criação vai com uma key 'created', enquanto a de listagem vai com uma key 'listed'. Veja screenshot no final desta página.
+
+### Client gRPC Evans
+```
+make evans
+```
+Veja screenshot no final desta página.
 
 <br>
 <br>
@@ -90,7 +150,7 @@ Abaixo demonstro um registro das alteraçõe feitas para a implementação de li
         - para executá-los agora é só chamar:
             - `h.uc.listOrders.Execute()`
             - `h.uc.createOrder.Execute(dto)`
-- adicionado arquivo api/list_orders.http
+- renomeado arquivo em api/ para api.http com adição da chamada GET /order
 
 
 ## implementacao graphql
@@ -112,8 +172,8 @@ Abaixo demonstro um registro das alteraçõe feitas para a implementação de li
 <br>
 <br>
 
-# Screenshots
-Chamada web HTTP ao endpoint `/list`:
+# Screenshotslist
+Chamada web HTTP ao endpoint GET `/order`:
 
 ![](./images/web.png)
 
