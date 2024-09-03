@@ -1,9 +1,11 @@
 package database
 
 import (
+	"context"
 	"database/sql"
 
 	"github.com/rsilraf/pos_goexpert/desafios/clean_architecture/internal/entity"
+	db "github.com/rsilraf/pos_goexpert/desafios/clean_architecture/internal/infra/sqlc"
 )
 
 type OrderRepository struct {
@@ -26,11 +28,24 @@ func (r *OrderRepository) Save(order *entity.Order) error {
 	return nil
 }
 
-func (r *OrderRepository) GetTotal() (int, error) {
-	var total int
-	err := r.Db.QueryRow("Select count(*) from orders").Scan(&total)
+func (r *OrderRepository) ListAll() ([]*entity.Order, error) {
+	ctx := context.Background()
+	db := db.New(r.Db)
+	dbOrders, err := db.ListOrders(ctx)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
-	return total, nil
+
+	// converte de db.Order para entity.Order
+	orders := []*entity.Order{}
+	for _, o := range dbOrders {
+
+		orders = append(orders, &entity.Order{
+			ID:         o.ID,
+			Price:      o.Price,
+			Tax:        o.Tax,
+			FinalPrice: o.FinalPrice,
+		})
+	}
+	return orders, nil
 }

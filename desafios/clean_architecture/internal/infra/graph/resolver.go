@@ -8,4 +8,5 @@ import "github.com/rsilraf/pos_goexpert/desafios/clean_architecture/internal/use
 
 type Resolver struct {
 	CreateOrderUseCase usecase.CreateOrderUseCase
+	ListOrdersUseCase  usecase.ListOrdersUseCase
 }
