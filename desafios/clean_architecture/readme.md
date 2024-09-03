@@ -119,26 +119,32 @@ Chamada web HTTP ao endpoint `/list`:
 
 
 Chamada gRPC via client Evans:
+
 ![](./images/evans.png)
 
 
 Chamada graphQL:
+
 ![](./images/graphql.png)
 
 RabbitMQ, filas:
 **created** para eventos de criação de ordem e **listed** para eventos de listagem e ordem:
+
 ![](./images/rabbit-queues.png)
 
 
 RabbitMQ, payload de listagem de ordens:
+
 ![](./images/rabbit-listorders.png)
 
 RabbitMQ, configuração de bindings da exchange `amq.direct`:
+
 ![](./images/rabbit-bindings.png)
 
 Ordens de teste no MySQL:
 
 **Nota:** como o foco foi na implementação da listagem, as mensagens criadas apenas tiveram o ID alterado (primary key) sem a preocupação com os outros campos. E mesmo assim o valor atribuido não sofreu qualquer critério especial.
+
 ![](./images/mysql.png)
 
 
